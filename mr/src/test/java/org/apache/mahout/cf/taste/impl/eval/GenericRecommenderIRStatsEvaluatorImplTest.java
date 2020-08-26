@@ -30,6 +30,7 @@ import org.apache.mahout.cf.taste.impl.similarity.LogLikelihoodSimilarity;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.recommender.Recommender;
+import org.apache.mahout.cf.taste.recommender.CandidateItemsStrategy;
 import org.junit.Test;
 
 public final class GenericRecommenderIRStatsEvaluatorImplTest extends TasteTestCase {
@@ -45,6 +46,11 @@ public final class GenericRecommenderIRStatsEvaluatorImplTest extends TasteTestC
 
 			@Override
 			public Recommender buildRecommender(DataModel dataModel, Fold fold) throws TasteException {
+				return buildRecommender(dataModel);
+			}
+			
+			@Override
+			public Recommender buildRecommender(DataModel dataModel, CandidateItemsStrategy s) throws TasteException {
 				return buildRecommender(dataModel);
 			}
 		};
