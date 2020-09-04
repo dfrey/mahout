@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 	private static final Logger log = LoggerFactory.getLogger(UserSwitchingHybridRecommender.class);
-
+	private static Logger logSwitchDBG = LoggerFactory.getLogger("switchDBG");
 	class BlenderStats {
 
 		private int hits;
@@ -264,6 +264,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.exit(-1);
 		}
 		trainBlenders();		
 	}
@@ -386,5 +387,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 	private void record(String s) {
 		debugFile.println(s);
+		debugFile.flush();
+		logSwitchDBG.info(s);
 	}
 }
