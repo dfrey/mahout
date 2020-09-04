@@ -230,7 +230,6 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.nbFolds = nbFolds;
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
-		trainBlenders();
 		try {
 			debugFile = new PrintWriter("debuglog.log");
 		} catch (FileNotFoundException e) {
@@ -238,6 +237,8 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 			e.printStackTrace();
 			System.exit(-1);
 		}
+		trainBlenders();
+		
 	}
 
 	public UserSwitchingHybridRecommender(DataModel dataModel, ArrayList<RecommenderBuilder> builders, long seed,
@@ -257,7 +258,6 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.nbFolds = nbFolds;
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
-		trainBlenders();
 		try {
 			debugFile = new PrintWriter("debuglog."+ ManagementFactory. getRuntimeMXBean().getName() +".log");
 			debugFile.println("seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
@@ -265,6 +265,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		trainBlenders();		
 	}
 
 	private void trainBlenders() throws TasteException {
