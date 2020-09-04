@@ -349,6 +349,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 			}
 		}
 		log.info("Attribution stats: {}", this.algAttributionStats);
+		debugFile.close();
 	}
 
 	@Override
