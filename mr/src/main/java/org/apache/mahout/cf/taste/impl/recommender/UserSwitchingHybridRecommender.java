@@ -1,5 +1,9 @@
 package org.apache.mahout.cf.taste.impl.recommender;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,8 +80,9 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		private final ArrayList<BlenderStats> stats;
 		private Integer bestIndex;
 		private List<Integer> bestIndices = null;
-
-		UserBlender(int nbAlgos) {
+		private long userId;//needed for debugging purposes it can be removed later
+		UserBlender(long userId, int nbAlgos) {
+			this.userId=userId;//needed for debugging purposes it can be removed later
 			this.stats = new ArrayList<BlenderStats>(nbAlgos);
 			for (int i = 0; i < nbAlgos; i++) {
 				this.stats.add(new BlenderStats(i));
@@ -142,6 +147,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 		void doneFirstPass(AlgAttributionStats s, int threshold) {
 			List<Integer> bestIndices = getBestIndices();
+			record("user "+userId+" got list of "+bestIndices.size()+" best indices.");
 			for (Integer idx : bestIndices) {
 				s.incr(idx);
 			}
@@ -149,14 +155,18 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 		void doneSecondPass(AlgAttributionStats s) {
 			int bestIndexValue=0;
+			record("user "+userId+" iterating through best indices");
 			List<Integer> bestIndices = getBestIndices();
 			for (Integer idx : bestIndices) {
 				int idxValue=s.get(idx);
+				record("user "+userId+" got idx "+idx+" with value "+idxValue+" current best is idx "+bestIndex+" / "+bestIndexValue);
 				if (bestIndexValue<idxValue) {
 					bestIndexValue=idxValue;
 					bestIndex=idx;					
 				}
 			}
+			record("user "+userId+" got best index "+bestIndex+" with value "
+					+bestIndexValue+" out of list of "+bestIndices.size()+" best indices.");
 		}
 
 		public String toString() {
@@ -203,7 +213,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 	private final int nbFolds;
 	private final int bestThreshold;
 	private final AlgAttributionStats algAttributionStats;
-
+	private PrintWriter debugFile;
 	public UserSwitchingHybridRecommender(DataModel dataModel, ArrayList<RecommenderBuilder> builders, long seed,
 			double relevanceThreshold, int at, int nbFolds, int bestThreshold) throws TasteException {
 		super(dataModel);
@@ -221,6 +231,12 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
 		trainBlenders();
+		try {
+			debugFile = new PrintWriter("debuglog.log");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public UserSwitchingHybridRecommender(DataModel dataModel, ArrayList<RecommenderBuilder> builders, long seed,
@@ -241,6 +257,13 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
 		trainBlenders();
+		try {
+			debugFile = new PrintWriter("debuglog."+ ManagementFactory. getRuntimeMXBean().getName() +".log");
+			debugFile.println("seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void trainBlenders() throws TasteException {
@@ -293,7 +316,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 				UserBlender blender = this.userBlenders.get(userID);
 				if (blender == null) {
-					blender = new UserBlender(this.nrecs);
+					blender = new UserBlender(userID, this.nrecs);
 					this.userBlenders.put(userID, blender);
 				}
 
@@ -358,4 +381,7 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 	public void refresh(Collection<Refreshable> alreadyRefreshed) {
 	}
 
+	private void record(String s) {
+		debugFile.println(s);
+	}
 }
