@@ -259,8 +259,9 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
 		try {
-			record("1-seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
+			
 			debugFile = new PrintWriter("debuglog."+ ManagementFactory. getRuntimeMXBean().getName() +".log");
+			record("1-seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
 			debugFile.println("seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
 			debugFile.flush();
 			record("2-seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
