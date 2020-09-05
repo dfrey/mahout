@@ -155,17 +155,17 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 
 		void doneSecondPass(AlgAttributionStats s) {
 			int bestIndexValue=0;
-			record("user "+userId+" iterating through best indices");
+			record("user "+userId+" iterating through "+bestIndices.size()+" best indices");
 			List<Integer> bestIndices = getBestIndices();
 			for (Integer idx : bestIndices) {
 				int idxValue=s.get(idx);
-				record("user "+userId+" got idx "+idx+" with value "+idxValue+" current best is idx "+bestIndex+" / "+bestIndexValue);
+				record("user "+userId+" iterating through "+bestIndices.size()+" best indices got idx "+idx+" with value "+idxValue+" current best is idx "+bestIndex+" / "+bestIndexValue);
 				if (bestIndexValue<idxValue) {
 					bestIndexValue=idxValue;
 					bestIndex=idx;					
 				}
 			}
-			record("user "+userId+" got best index "+bestIndex+" with value "
+			record("user "+userId+" got best index "+bestIndex+" = "+recs.get(bestIndex).getClass().getCanonicalName()+" with local value "+ stats.get(bestIndex)+" global value "
 					+bestIndexValue+" out of list of "+bestIndices.size()+" best indices.");
 		}
 
@@ -259,8 +259,11 @@ public class UserSwitchingHybridRecommender extends AbstractRecommender {
 		this.bestThreshold = bestThreshold;
 		this.algAttributionStats = new AlgAttributionStats(this.nrecs);
 		try {
+			record("1-seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
 			debugFile = new PrintWriter("debuglog."+ ManagementFactory. getRuntimeMXBean().getName() +".log");
 			debugFile.println("seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
+			debugFile.flush();
+			record("2-seed="+seed+" relTh="+relevanceThreshold+" at="+at+" bestTh"+bestThreshold+ " foldPct="+nbFolds);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
